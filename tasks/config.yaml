@@ -1,0 +1,25 @@
+- name: Template wg-quick config
+  loop: "{{ wireguard.wg_quick|dict2items }}"
+  loop_control:
+    label: "{{ dest }}"
+  vars:
+    wg_quick_config: "{{ item.value }}"
+    dest: "/etc/wireguard/{{ item.key }}.conf"
+  template:
+    src: wg-quick.conf
+    dest: "{{ dest }}"
+  register: wireguard_wg_quick_template_result
+
+- name: Enable wg-quick services
+  loop: "{{ wireguard.wg_quick.keys() }}"
+  systemd:
+    name: "wg-quick@{{ item }}"
+    enabled: true
+
+- name: Restart WireGuard VPNs
+  loop: "{{ wireguard_wg_quick_template_result.results|selectattr('changed', 'eq', true)|list }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+  systemd:
+    name: "wg-quick@{{ item.item.key }}"
+    state: restarted
