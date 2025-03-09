@@ -1,3 +1,5 @@
+---
 - name: Install WireGuard tools
-  apt:
+  ansible.builtin.apt:
+    update_cache: yes
     name: wireguard-tools

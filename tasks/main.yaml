@@ -1,2 +1,5 @@
-- import_tasks: install.yaml
-- import_tasks: config.yaml
+---
+- name: Install Wireguard
+  ansible.builtin.include_tasks: install.yaml
+- name: Configure Wireguard
+  ansible.builtin.include_tasks: config.yaml
